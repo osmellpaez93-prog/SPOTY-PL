@@ -12,8 +12,6 @@
         p { color: #b3b3b3; margin-bottom: 30px; line-height: 1.6; }
         .btn { background: #1DB954; color: #000; border: none; padding: 16px 48px; border-radius: 50px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.3s; }
         .btn:hover { transform: scale(1.05); background: #1ed760; }
-        .btn-danger { background: #e74c3c; color: #fff; margin-left: 12px; }
-        .btn-danger:hover { background: #c0392b; }
         .info { background: #181818; border: 1px solid #333; border-radius: 12px; padding: 20px; margin-top: 30px; text-align: left; }
         .info h3 { color: #1DB954; margin-bottom: 12px; }
         .info code { background: #2a2a2a; padding: 4px 8px; border-radius: 4px; color: #1DB954; font-size: 0.9rem; }
@@ -84,7 +82,6 @@
         .loading-overlay.active { display: flex; }
         .spinner { width: 48px; height: 48px; border: 3px solid rgba(255,255,255,0.1); border-top-color: #1DB954; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .debug-panel { background: #1a1a2e; border: 1px solid #333; border-radius: 8px; padding: 12px; margin-top: 12px; font-family: monospace; font-size: 0.8rem; color: #1DB954; text-align: left; max-height: 200px; overflow-y: auto; }
     </style>
 </head>
 <body>
@@ -100,16 +97,12 @@
         <p>Mezcla tus playlists de Bachata y Salsa creando listas perfectas con la proporción que elijas.</p>
         <button class="btn" onclick="doLogin()">Conectar con Spotify</button>
         <div class="info">
-            <h3>Configuración requerida</h3>
-            <p style="margin-bottom:12px;">El Redirect URI debe coincidir EXACTAMENTE:</p>
-            <div class="uri-box">https://pl-spoty.vercel.app/</div>
+            <h3>⚠️ Importante: Si ya conectaste antes</h3>
             <ol>
-                <li>Ve a <a href="https://developer.spotify.com/dashboard" target="_blank" style="color:#1DB954">Spotify Developer Dashboard</a></li>
-                <li>Entra en tu app → <strong>Edit Settings</strong></li>
-                <li>Elimina todos los URIs existentes</li>
-                <li>Añade: <code>https://pl-spoty.vercel.app/</code></li>
-                <li>Clic en <strong>Add</strong> → <strong>Save</strong></li>
-                <li>Recarga esta página y pulsa "Conectar con Spotify"</li>
+                <li>Ve a <a href="https://www.spotify.com/account/apps/" target="_blank" style="color:#1DB954">spotify.com/account/apps/</a></li>
+                <li>Busca tu app y haz clic en <strong>"Remove Access"</strong></li>
+                <li>Vuelve aquí y pulsa "Conectar con Spotify"</li>
+                <li><strong>Acepta TODOS los permisos</strong> que te pida Spotify</li>
             </ol>
         </div>
     </div>
@@ -188,8 +181,6 @@
                 <h3>¡Playlist creada!</h3>
                 <p id="resultText"></p>
             </div>
-
-            <div class="debug-panel" id="debugPanel" style="display:none;"></div>
         </div>
     </div>
 
@@ -200,15 +191,6 @@
 
     var accessToken = '', userId = '', userName = '';
     var allPlaylists = [], bachataTracks = [], salsaTracks = [];
-
-    function log(msg) {
-        console.log('[App]', msg);
-        var panel = document.getElementById('debugPanel');
-        if (panel && panel.style.display !== 'none') {
-            panel.innerHTML += '<div>' + new Date().toLocaleTimeString() + ' - ' + msg + '</div>';
-            panel.scrollTop = panel.scrollHeight;
-        }
-    }
 
     function generateRandomString(length) {
         var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -231,7 +213,6 @@
     }
 
     function doLogin() {
-        log('Iniciando login...');
         sessionStorage.clear();
         var codeVerifier = generateRandomString(64);
         sessionStorage.setItem('code_verifier', codeVerifier);
@@ -243,9 +224,9 @@
                 scope: SCOPES,
                 code_challenge_method: 'S256',
                 code_challenge: codeChallenge,
-                redirect_uri: REDIRECT_URI
+                redirect_uri: REDIRECT_URI,
+                show_dialog: 'true'
             });
-            log('Redirigiendo a Spotify...');
             window.location.href = 'https://accounts.spotify.com/authorize?' + params.toString();
         });
     }
@@ -258,7 +239,6 @@
 
     function exchangeCodeForToken(code) {
         var codeVerifier = sessionStorage.getItem('code_verifier');
-        log('Intercambiando code por token...');
         var body = new URLSearchParams({
             grant_type: 'authorization_code',
             code: code,
@@ -274,7 +254,6 @@
             if (!r.ok) return r.json().then(function(e) { throw new Error(e.error_description || 'Error token: ' + r.status); });
             return r.json();
         }).then(function(data) {
-            log('Token obtenido exitosamente');
             sessionStorage.setItem('access_token', data.access_token);
             if (data.refresh_token) sessionStorage.setItem('refresh_token', data.refresh_token);
             sessionStorage.setItem('token_expires', Date.now() + data.expires_in * 1000);
@@ -286,34 +265,30 @@
     function getValidToken() {
         var token = sessionStorage.getItem('access_token');
         var expires = sessionStorage.getItem('token_expires');
-        if (!token) { log('No hay token'); return Promise.resolve(null); }
+        if (!token) return Promise.resolve(null);
         if (expires && Date.now() > parseInt(expires) - 60000) {
-            log('Token expirado, refrescando...');
             var rt = sessionStorage.getItem('refresh_token');
-            if (!rt) { log('No hay refresh token'); doLogout(); return Promise.resolve(null); }
+            if (!rt) { doLogout(); return Promise.resolve(null); }
             var body = new URLSearchParams({ grant_type: 'refresh_token', refresh_token: rt, client_id: CLIENT_ID });
             return fetch('https://accounts.spotify.com/api/token', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: body.toString()
             }).then(function(r) {
-                if (!r.ok) { log('Error refrescando token'); doLogout(); return null; }
+                if (!r.ok) { doLogout(); return null; }
                 return r.json();
             }).then(function(d) {
                 if (!d) return null;
                 sessionStorage.setItem('access_token', d.access_token);
                 if (d.refresh_token) sessionStorage.setItem('refresh_token', d.refresh_token);
                 sessionStorage.setItem('token_expires', Date.now() + d.expires_in * 1000);
-                log('Token refrescado');
                 return d.access_token;
             });
         }
-        log('Token válido');
         return Promise.resolve(token);
     }
 
     function doLogout() {
-        log('Logout');
         sessionStorage.clear();
         document.getElementById('appMain').classList.add('hidden');
         document.getElementById('loginScreen').classList.remove('hidden');
@@ -322,19 +297,17 @@
     function spotifyApi(endpoint, options) {
         options = options || {};
         return getValidToken().then(function(token) {
-            if (!token) { doLogout(); throw new Error('Sesión expirada. Pulsa Reconectar.'); }
+            if (!token) { doLogout(); throw new Error('Sesión expirada'); }
             var headers = { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' };
             var fetchOpts = { headers: headers };
             if (options.method) fetchOpts.method = options.method;
             if (options.body) fetchOpts.body = options.body;
-            log('API: ' + (options.method || 'GET') + ' ' + endpoint);
             return fetch('https://api.spotify.com/v1' + endpoint, fetchOpts);
         }).then(function(r) {
             if (r.status === 204) return null;
             if (!r.ok) {
                 return r.json().then(function(e) { 
                     var msg = (e.error && e.error.message) ? e.error.message : 'Error ' + r.status;
-                    log('Error API: ' + msg);
                     throw new Error(msg); 
                 }).catch(function() { throw new Error('Error ' + r.status); });
             }
@@ -348,7 +321,6 @@
             userName = d.display_name || d.id;
             document.getElementById('userName').textContent = userName;
             document.getElementById('userAvatar').textContent = userName.charAt(0).toUpperCase();
-            log('Usuario: ' + userName);
         });
     }
 
@@ -389,10 +361,8 @@
 
     function loadPlaylists() {
         showLoading('Cargando playlists...');
-        log('Cargando playlists del usuario...');
         getAllPlaylists().then(function(playlists) {
             allPlaylists = playlists;
-            log('Playlists cargadas: ' + allPlaylists.length);
             allPlaylists.sort(function(a,b) { return a.name.localeCompare(b.name); });
             var bs = document.getElementById('bachataSelect');
             var ss = document.getElementById('salsaSelect');
@@ -408,8 +378,8 @@
             showToast('Cargadas ' + allPlaylists.length + ' playlists', 'success');
             checkReady();
         }).catch(function(e) { 
-            log('Error cargando playlists: ' + e.message);
             showToast('Error: ' + e.message + '. Pulsa Reconectar.', 'error'); 
+            console.error(e);
         }).finally(hideLoading);
     }
 
@@ -435,19 +405,17 @@
         prev.innerHTML = (img ? '<img src="'+img+'">' : '<div class="placeholder"></div>') + '<div class="playlist-info"><h4>'+pl.name+'</h4><p>'+trackCount+' canciones</p></div>';
         
         showLoading('Cargando canciones...');
-        log('Cargando tracks de: ' + pl.name + ' (' + plid + ')');
         getPlaylistTracks(plid).then(function(tracks) {
-            log('Tracks cargados: ' + tracks.length);
             if (type==='bachata') bachataTracks=tracks; else salsaTracks=tracks;
             var p = prev.querySelector('p'); 
             if (p) p.textContent = tracks.length + ' canciones cargadas';
             checkReady();
             showToast('Cargadas ' + tracks.length + ' canciones', 'success');
         }).catch(function(e) { 
-            log('Error cargando tracks: ' + e.message);
-            showToast('Error al cargar canciones: ' + e.message + '. Pulsa "Reconectar" para obtener nuevos permisos.', 'error');
+            console.error('Error cargando tracks:', e);
+            showToast('Error 403: Ve a spotify.com/account/apps/ y revoca el acceso, luego reconecta.', 'error');
             var p = prev.querySelector('p'); 
-            if (p) p.textContent = 'Error al cargar - Pulsa Reconectar';
+            if (p) p.textContent = 'Error 403 - Revoca acceso en Spotify';
         }).finally(hideLoading);
     }
 
@@ -559,20 +527,18 @@
         var params = new URLSearchParams(window.location.search);
         var code = params.get('code');
         var error = params.get('error');
-        if (error) { log('Error de auth: ' + error); showToast('Error: '+error,'error'); return; }
+        if (error) { showToast('Error: '+error,'error'); return; }
         if (code) {
-            log('Code recibido, autenticando...');
             showLoading('Autenticando...');
             exchangeCodeForToken(code).then(function() { return getUserProfile(); }).then(function() {
                 document.getElementById('loginScreen').classList.add('hidden');
                 document.getElementById('appMain').classList.remove('hidden');
                 return loadPlaylists();
-            }).catch(function(e) { log('Error auth: ' + e.message); showToast('Error: '+e.message,'error'); }).finally(hideLoading);
+            }).catch(function(e) { showToast('Error: '+e.message,'error'); console.error(e); }).finally(hideLoading);
             return;
         }
         var saved = sessionStorage.getItem('access_token');
         if (saved) {
-            log('Token guardado encontrado');
             getValidToken().then(function(t) {
                 if (t) {
                     accessToken = t;
@@ -584,7 +550,7 @@
                     document.getElementById('appMain').classList.remove('hidden');
                     return loadPlaylists();
                 }
-            }).catch(function(e) { log('Error init: ' + e.message); }).finally(hideLoading);
+            }).catch(function(e) { console.error(e); }).finally(hideLoading);
             return;
         }
         hideLoading();
