@@ -11,108 +11,45 @@
             background: #0a0a0a;
             color: #fff;
             min-height: 100vh;
-        }
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: rgba(10,10,10,0.95);
-            padding: 20px 30px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #333;
-            z-index: 100;
+            justify-content: center;
         }
-        .header h1 { 
-            font-size: 1.2rem; 
-            margin: 0;
-            background: linear-gradient(135deg, #1DB954, #fff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+        .container { text-align: center; padding: 40px; max-width: 600px; }
+        h1 { font-size: 2.5rem; margin-bottom: 20px; background: linear-gradient(135deg, #1DB954, #fff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        p { color: #b3b3b3; margin-bottom: 30px; line-height: 1.6; }
+        .btn { background: #1DB954; color: #000; border: none; padding: 16px 48px; border-radius: 50px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.3s; }
+        .btn:hover { transform: scale(1.05); background: #1ed760; }
+        .info { background: #181818; border: 1px solid #333; border-radius: 12px; padding: 20px; margin-top: 30px; text-align: left; }
+        .info h3 { color: #1DB954; margin-bottom: 12px; }
+        .info code { background: #2a2a2a; padding: 4px 8px; border-radius: 4px; color: #1DB954; font-size: 0.9rem; }
+        .info ol { color: #b3b3b3; padding-left: 20px; line-height: 2; }
+        .uri-box { background: #2a2a2a; border: 2px solid #1DB954; border-radius: 8px; padding: 12px; margin: 12px 0; font-family: monospace; font-size: 0.9rem; color: #1DB954; word-break: break-all; }
+        .hidden { display: none !important; }
+        .header { position: fixed; top: 0; left: 0; right: 0; background: rgba(10,10,10,0.95); padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; z-index: 100; }
+        .header h1 { font-size: 1.2rem; margin: 0; }
         .user-info { display: flex; align-items: center; gap: 12px; }
-        .avatar {
-            width: 36px; height: 36px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 700;
-        }
-        .logout-btn {
-            background: rgba(255,255,255,0.1);
-            border: none;
-            color: #b3b3b3;
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.85rem;
-        }
+        .avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; font-weight: 700; }
+        .logout-btn { background: rgba(255,255,255,0.1); border: none; color: #b3b3b3; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; }
         .logout-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
         .app-content { padding: 100px 30px 30px; max-width: 1200px; margin: 0 auto; }
-        .config-panel {
-            background: #181818;
-            border: 1px solid #333;
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 24px;
-        }
+        .config-panel { background: #181818; border: 1px solid #333; border-radius: 12px; padding: 24px; margin-bottom: 24px; }
         .config-panel h3 { color: #b3b3b3; margin-bottom: 16px; font-size: 1rem; }
         .config-row { display: flex; gap: 16px; flex-wrap: wrap; }
         .config-group { flex: 1; min-width: 150px; }
-        .config-group label {
-            display: block;
-            font-size: 0.8rem;
-            color: #727272;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-        }
-        .config-group input, .config-group select {
-            width: 100%;
-            padding: 10px 14px;
-            background: #2a2a2a;
-            border: 1px solid #333;
-            border-radius: 8px;
-            color: #fff;
-            font-size: 0.95rem;
-        }
-        .config-group input:focus, .config-group select:focus {
-            outline: none;
-            border-color: #1DB954;
-        }
+        .config-group label { display: block; font-size: 0.8rem; color: #727272; margin-bottom: 6px; text-transform: uppercase; }
+        .config-group input, .config-group select { width: 100%; padding: 10px 14px; background: #2a2a2a; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 0.95rem; }
+        .config-group input:focus, .config-group select:focus { outline: none; border-color: #1DB954; }
         .playlists-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
         @media (max-width: 768px) { .playlists-grid { grid-template-columns: 1fr; } }
-        .playlist-card {
-            background: #181818;
-            border: 1px solid #333;
-            border-radius: 12px;
-            padding: 24px;
-        }
+        .playlist-card { background: #181818; border: 1px solid #333; border-radius: 12px; padding: 24px; }
         .playlist-card.bachata { border-top: 3px solid #e74c3c; }
         .playlist-card.salsa { border-top: 3px solid #f39c12; }
         .playlist-card h3 { margin-bottom: 12px; }
         .playlist-card.bachata h3 { color: #e74c3c; }
         .playlist-card.salsa h3 { color: #f39c12; }
-        .playlist-select {
-            width: 100%;
-            padding: 12px;
-            background: #2a2a2a;
-            border: 1px solid #333;
-            border-radius: 8px;
-            color: #fff;
-            font-size: 0.95rem;
-            margin-bottom: 12px;
-        }
-        .playlist-preview {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            background: #2a2a2a;
-            border-radius: 8px;
-            min-height: 80px;
-        }
+        .playlist-select { width: 100%; padding: 12px; background: #2a2a2a; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 0.95rem; margin-bottom: 12px; }
+        .playlist-preview { display: flex; align-items: center; gap: 12px; padding: 12px; background: #2a2a2a; border-radius: 8px; min-height: 80px; }
         .playlist-preview img { width: 64px; height: 64px; border-radius: 8px; object-fit: cover; }
         .placeholder { width: 64px; height: 64px; border-radius: 8px; background: #333; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
         .playlist-info h4 { font-size: 0.9rem; margin-bottom: 4px; }
@@ -123,40 +60,18 @@
         .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-secondary { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid #333; padding: 12px 24px; border-radius: 50px; font-weight: 600; cursor: pointer; font-size: 0.95rem; }
         .btn-secondary:hover { background: rgba(255,255,255,0.15); }
-        .progress-section {
-            background: #181818;
-            border: 1px solid #333;
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 24px;
-            display: none;
-        }
+        .progress-section { background: #181818; border: 1px solid #333; border-radius: 12px; padding: 24px; margin-bottom: 24px; display: none; }
         .progress-section.active { display: block; }
         .progress-header { display: flex; justify-content: space-between; margin-bottom: 12px; }
         .progress-header h4 { color: #b3b3b3; font-size: 0.95rem; }
         .progress-header span { color: #1DB954; font-weight: 600; font-size: 0.85rem; }
         .progress-bar-bg { width: 100%; height: 8px; background: #2a2a2a; border-radius: 4px; overflow: hidden; margin-bottom: 12px; }
         .progress-bar { height: 100%; background: #1DB954; width: 0%; transition: width 0.3s; }
-        .progress-log {
-            max-height: 150px;
-            overflow-y: auto;
-            font-size: 0.8rem;
-            color: #727272;
-            line-height: 1.8;
-            padding: 12px;
-            background: #0a0a0a;
-            border-radius: 8px;
-        }
+        .progress-log { max-height: 150px; overflow-y: auto; font-size: 0.8rem; color: #727272; line-height: 1.8; padding: 12px; background: #0a0a0a; border-radius: 8px; }
         .log-entry.success { color: #1DB954; }
         .log-entry.error { color: #e74c3c; }
         .log-entry.info { color: #3498db; }
-        .result-section {
-            background: #181818;
-            border: 1px solid #1DB954;
-            border-radius: 12px;
-            padding: 24px;
-            display: none;
-        }
+        .result-section { background: #181818; border: 1px solid #1DB954; border-radius: 12px; padding: 24px; display: none; }
         .result-section.active { display: block; }
         .result-section h3 { color: #1DB954; margin-bottom: 12px; }
         .result-section p { color: #b3b3b3; line-height: 1.6; }
@@ -164,33 +79,12 @@
         .checkbox-group { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
         .checkbox-group input { width: 18px; height: 18px; accent-color: #1DB954; }
         .checkbox-group label { color: #b3b3b3; font-size: 0.9rem; cursor: pointer; }
-        .toast-container { position: fixed; top: 100px; right: 20px; z-index: 1000; }
-        .toast {
-            background: #181818;
-            border: 1px solid #333;
-            border-radius: 8px;
-            padding: 14px 20px;
-            margin-bottom: 10px;
-            min-width: 300px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            animation: slideIn 0.3s;
-        }
+        .toast-container { position: fixed; top: 80px; right: 20px; z-index: 1000; }
+        .toast { background: #181818; border: 1px solid #333; border-radius: 8px; padding: 14px 20px; margin-bottom: 10px; min-width: 300px; display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s; }
         .toast.success { border-left: 3px solid #1DB954; }
         .toast.error { border-left: 3px solid #e74c3c; }
         @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
-        .loading-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.7);
-            z-index: 500;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            gap: 16px;
-        }
+        .loading-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 500; align-items: center; justify-content: center; flex-direction: column; gap: 16px; }
         .loading-overlay.active { display: flex; }
         .spinner { width: 48px; height: 48px; border: 3px solid rgba(255,255,255,0.1); border-top-color: #1DB954; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -204,78 +98,98 @@
         <p id="loadingText">Cargando...</p>
     </div>
 
-    <div class="header">
+    <div class="container" id="loginScreen">
         <h1>Bachata & Salsa Mixer</h1>
-        <div class="user-info">
-            <div class="avatar" id="userAvatar">U</div>
-            <span id="userName">Usuario</span>
-            <button class="logout-btn" onclick="doLogout()">Salir</button>
+        <p>Mezcla tus playlists de Bachata y Salsa creando listas perfectas con la proporción que elijas.</p>
+        <button class="btn" onclick="doLogin()">Conectar con Spotify</button>
+        <div class="info">
+            <h3>Configuración requerida</h3>
+            <p style="margin-bottom:12px;">El Redirect URI debe coincidir EXACTAMENTE:</p>
+            <div class="uri-box">https://pl-spoty.vercel.app/</div>
+            <ol>
+                <li>Ve a <a href="https://developer.spotify.com/dashboard" target="_blank" style="color:#1DB954">Spotify Developer Dashboard</a></li>
+                <li>Entra en tu app → <strong>Edit Settings</strong></li>
+                <li>Elimina todos los URIs existentes</li>
+                <li>Añade: <code>https://pl-spoty.vercel.app/</code></li>
+                <li>Clic en <strong>Add</strong> → <strong>Save</strong></li>
+                <li>Recarga esta página y pulsa "Conectar con Spotify"</li>
+            </ol>
         </div>
     </div>
 
-    <div class="app-content">
-        <div class="config-panel">
-            <h3>Configuración de mezcla</h3>
-            <div class="config-row">
-                <div class="config-group">
-                    <label>Bachata por bloque</label>
-                    <input type="number" id="bachataCount" value="3" min="1" max="20">
-                </div>
-                <div class="config-group">
-                    <label>Salsa por bloque</label>
-                    <input type="number" id="salsaCount" value="2" min="1" max="20">
-                </div>
-                <div class="config-group">
-                    <label>Nombre playlist</label>
-                    <input type="text" id="playlistName" value="Mi Mix Bachata-Salsa">
-                </div>
-            </div>
-            <div class="checkbox-group">
-                <input type="checkbox" id="shuffleCheck">
-                <label for="shuffleCheck">Mezclar aleatoriamente</label>
+    <div class="hidden" id="appMain">
+        <div class="header">
+            <h1>Bachata & Salsa Mixer</h1>
+            <div class="user-info">
+                <div class="avatar" id="userAvatar">U</div>
+                <span id="userName">Usuario</span>
+                <button class="logout-btn" onclick="doLogout()">Salir</button>
             </div>
         </div>
-
-        <div class="playlists-grid">
-            <div class="playlist-card bachata">
-                <h3>Bachata</h3>
-                <select id="bachataSelect" class="playlist-select" onchange="onPlaylistSelect('bachata')">
-                    <option value="">-- Bachata --</option>
-                </select>
-                <div class="playlist-preview" id="bachataPreview">
-                    <div class="placeholder"></div>
-                    <div class="playlist-info"><h4>Selecciona</h4><p>Playlist de Bachata</p></div>
+        <div class="app-content">
+            <div class="config-panel">
+                <h3>Configuración de mezcla</h3>
+                <div class="config-row">
+                    <div class="config-group">
+                        <label>Bachata por bloque</label>
+                        <input type="number" id="bachataCount" value="3" min="1" max="20">
+                    </div>
+                    <div class="config-group">
+                        <label>Salsa por bloque</label>
+                        <input type="number" id="salsaCount" value="2" min="1" max="20">
+                    </div>
+                    <div class="config-group">
+                        <label>Nombre playlist</label>
+                        <input type="text" id="playlistName" value="Mi Mix Bachata-Salsa">
+                    </div>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="shuffleCheck">
+                    <label for="shuffleCheck">Mezclar aleatoriamente</label>
                 </div>
             </div>
-            <div class="playlist-card salsa">
-                <h3>Salsa</h3>
-                <select id="salsaSelect" class="playlist-select" onchange="onPlaylistSelect('salsa')">
-                    <option value="">-- Salsa --</option>
-                </select>
-                <div class="playlist-preview" id="salsaPreview">
-                    <div class="placeholder"></div>
-                    <div class="playlist-info"><h4>Selecciona</h4><p>Playlist de Salsa</p></div>
+
+            <div class="playlists-grid">
+                <div class="playlist-card bachata">
+                    <h3>Bachata</h3>
+                    <select id="bachataSelect" class="playlist-select" onchange="onPlaylistSelect('bachata')">
+                        <option value="">Cargando...</option>
+                    </select>
+                    <div class="playlist-preview" id="bachataPreview">
+                        <div class="placeholder"></div>
+                        <div class="playlist-info"><h4>Selecciona</h4><p>Playlist de Bachata</p></div>
+                    </div>
+                </div>
+                <div class="playlist-card salsa">
+                    <h3>Salsa</h3>
+                    <select id="salsaSelect" class="playlist-select" onchange="onPlaylistSelect('salsa')">
+                        <option value="">Cargando...</option>
+                    </select>
+                    <div class="playlist-preview" id="salsaPreview">
+                        <div class="placeholder"></div>
+                        <div class="playlist-info"><h4>Selecciona</h4><p>Playlist de Salsa</p></div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="actions">
-            <button class="btn-primary" id="btnCreate" onclick="createMixedPlaylist()" disabled>Crear Playlist Mixta</button>
-            <button class="btn-secondary" onclick="loadPlaylists()">Recargar</button>
-        </div>
-
-        <div class="progress-section" id="progressSection">
-            <div class="progress-header">
-                <h4 id="progressTitle">Creando...</h4>
-                <span id="progressCount">0/0</span>
+            <div class="actions">
+                <button class="btn-primary" id="btnCreate" onclick="createMixedPlaylist()" disabled>Crear Playlist Mixta</button>
+                <button class="btn-secondary" onclick="loadPlaylists()">Recargar</button>
             </div>
-            <div class="progress-bar-bg"><div class="progress-bar" id="progressBar"></div></div>
-            <div class="progress-log" id="progressLog"></div>
-        </div>
 
-        <div class="result-section" id="resultSection">
-            <h3>¡Playlist creada!</h3>
-            <p id="resultText"></p>
+            <div class="progress-section" id="progressSection">
+                <div class="progress-header">
+                    <h4 id="progressTitle">Creando...</h4>
+                    <span id="progressCount">0/0</span>
+                </div>
+                <div class="progress-bar-bg"><div class="progress-bar" id="progressBar"></div></div>
+                <div class="progress-log" id="progressLog"></div>
+            </div>
+
+            <div class="result-section" id="resultSection">
+                <h3>¡Playlist creada!</h3>
+                <p id="resultText"></p>
+            </div>
         </div>
     </div>
 
@@ -377,7 +291,8 @@
 
     function doLogout() {
         sessionStorage.clear();
-        window.location.href = REDIRECT_URI;
+        document.getElementById('appMain').classList.add('hidden');
+        document.getElementById('loginScreen').classList.remove('hidden');
     }
 
     function spotifyApi(endpoint, options) {
@@ -446,8 +361,8 @@
             ss.innerHTML = '<option value="">-- Salsa --</option>';
             for (var i = 0; i < allPlaylists.length; i++) {
                 var pl = allPlaylists[i];
-                // CORRECCIÓN: Verificar si tracks existe
-                var trackCount = (pl.tracks && pl.tracks.total) ? pl.tracks.total : 0;
+                // CORRECCIÓN 1: Verificar si tracks existe antes de leer .total
+                var trackCount = (pl.tracks && pl.tracks.total !== undefined) ? pl.tracks.total : '?';
                 var txt = pl.name + ' (' + trackCount + ')';
                 var o1 = document.createElement('option'); o1.value = pl.id; o1.textContent = txt; bs.appendChild(o1);
                 var o2 = document.createElement('option'); o2.value = pl.id; o2.textContent = txt; ss.appendChild(o2);
@@ -475,7 +390,11 @@
         for (var i=0; i<allPlaylists.length; i++) if (allPlaylists[i].id===plid) { pl=allPlaylists[i]; break; }
         if (!pl) return;
         var img = (pl.images && pl.images[0]) ? pl.images[0].url : '';
-        prev.innerHTML = (img ? '<img src="'+img+'">' : '<div class="placeholder"></div>') + '<div class="playlist-info"><h4>'+pl.name+'</h4><p>'+pl.tracks.total+' canciones</p></div>';
+        
+        // CORRECCIÓN 2: Verificar si tracks existe antes de leer .total
+        var trackCount = (pl.tracks && pl.tracks.total !== undefined) ? pl.tracks.total : '?';
+        prev.innerHTML = (img ? '<img src="'+img+'">' : '<div class="placeholder"></div>') + '<div class="playlist-info"><h4>'+pl.name+'</h4><p>'+trackCount+' canciones</p></div>';
+        
         showLoading('Cargando canciones...');
         getPlaylistTracks(plid).then(function(tracks) {
             if (type==='bachata') bachataTracks=tracks; else salsaTracks=tracks;
@@ -596,8 +515,10 @@
         if (code) {
             showLoading('Autenticando...');
             exchangeCodeForToken(code).then(function() { return getUserProfile(); }).then(function() {
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('appMain').classList.remove('hidden');
                 return loadPlaylists();
-            }).catch(function(e) { showToast('Error: '+e.message,'error'); }).finally(hideLoading);
+            }).catch(function(e) { showToast('Error: '+e.message,'error'); console.error(e); }).finally(hideLoading);
             return;
         }
         var saved = sessionStorage.getItem('access_token');
@@ -609,6 +530,8 @@
                 }
             }).then(function() {
                 if (userId) {
+                    document.getElementById('loginScreen').classList.add('hidden');
+                    document.getElementById('appMain').classList.remove('hidden');
                     return loadPlaylists();
                 }
             }).catch(function(e) { console.error(e); }).finally(hideLoading);
