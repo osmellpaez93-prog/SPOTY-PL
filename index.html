@@ -26,6 +26,8 @@
         .avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; font-weight: 700; }
         .logout-btn { background: rgba(255,255,255,0.1); border: none; color: #b3b3b3; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; }
         .logout-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
+        .reconnect-btn { background: #e74c3c; color: #fff; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; margin-left: 8px; }
+        .reconnect-btn:hover { background: #c0392b; }
         .app-content { padding: 100px 30px 30px; max-width: 1200px; margin: 0 auto; }
         .config-panel { background: #181818; border: 1px solid #333; border-radius: 12px; padding: 24px; margin-bottom: 24px; }
         .config-panel h3 { color: #b3b3b3; margin-bottom: 16px; font-size: 1rem; }
@@ -82,8 +84,7 @@
         .loading-overlay.active { display: flex; }
         .spinner { width: 48px; height: 48px; border: 3px solid rgba(255,255,255,0.1); border-top-color: #1DB954; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .reconnect-btn { background: #e74c3c; color: #fff; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; margin-left: 8px; }
-        .reconnect-btn:hover { background: #c0392b; }
+        .debug-panel { background: #1a1a2e; border: 1px solid #333; border-radius: 8px; padding: 12px; margin-top: 12px; font-family: monospace; font-size: 0.8rem; color: #1DB954; text-align: left; max-height: 200px; overflow-y: auto; }
     </style>
 </head>
 <body>
@@ -187,17 +188,27 @@
                 <h3>¡Playlist creada!</h3>
                 <p id="resultText"></p>
             </div>
+
+            <div class="debug-panel" id="debugPanel" style="display:none;"></div>
         </div>
     </div>
 
     <script>
     var REDIRECT_URI = 'https://pl-spoty.vercel.app/';
     var CLIENT_ID = '6a5a091a22044ef58f9a5114f0daab5b';
-    // SCOPES COMPLETOS - Todos los permisos necesarios
     var SCOPES = 'user-read-private user-read-email playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private';
 
     var accessToken = '', userId = '', userName = '';
     var allPlaylists = [], bachataTracks = [], salsaTracks = [];
+
+    function log(msg) {
+        console.log('[App]', msg);
+        var panel = document.getElementById('debugPanel');
+        if (panel && panel.style.display !== 'none') {
+            panel.innerHTML += '<div>' + new Date().toLocaleTimeString() + ' - ' + msg + '</div>';
+            panel.scrollTop = panel.scrollHeight;
+        }
+    }
 
     function generateRandomString(length) {
         var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -220,9 +231,8 @@
     }
 
     function doLogin() {
-        // Limpiar sesión anterior completamente
+        log('Iniciando login...');
         sessionStorage.clear();
-        
         var codeVerifier = generateRandomString(64);
         sessionStorage.setItem('code_verifier', codeVerifier);
         sha256(codeVerifier).then(function(hashed) {
@@ -235,12 +245,12 @@
                 code_challenge: codeChallenge,
                 redirect_uri: REDIRECT_URI
             });
+            log('Redirigiendo a Spotify...');
             window.location.href = 'https://accounts.spotify.com/authorize?' + params.toString();
         });
     }
 
     function forceReconnect() {
-        // Forzar reconexión con nuevos permisos
         if (confirm('¿Reconectar con Spotify? Se solicitarán todos los permisos necesarios.')) {
             doLogin();
         }
@@ -248,6 +258,7 @@
 
     function exchangeCodeForToken(code) {
         var codeVerifier = sessionStorage.getItem('code_verifier');
+        log('Intercambiando code por token...');
         var body = new URLSearchParams({
             grant_type: 'authorization_code',
             code: code,
@@ -260,9 +271,10 @@
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: body.toString()
         }).then(function(r) {
-            if (!r.ok) return r.json().then(function(e) { throw new Error(e.error_description || 'Error token'); });
+            if (!r.ok) return r.json().then(function(e) { throw new Error(e.error_description || 'Error token: ' + r.status); });
             return r.json();
         }).then(function(data) {
+            log('Token obtenido exitosamente');
             sessionStorage.setItem('access_token', data.access_token);
             if (data.refresh_token) sessionStorage.setItem('refresh_token', data.refresh_token);
             sessionStorage.setItem('token_expires', Date.now() + data.expires_in * 1000);
@@ -274,30 +286,34 @@
     function getValidToken() {
         var token = sessionStorage.getItem('access_token');
         var expires = sessionStorage.getItem('token_expires');
-        if (!token) return Promise.resolve(null);
+        if (!token) { log('No hay token'); return Promise.resolve(null); }
         if (expires && Date.now() > parseInt(expires) - 60000) {
+            log('Token expirado, refrescando...');
             var rt = sessionStorage.getItem('refresh_token');
-            if (!rt) { doLogout(); return Promise.resolve(null); }
+            if (!rt) { log('No hay refresh token'); doLogout(); return Promise.resolve(null); }
             var body = new URLSearchParams({ grant_type: 'refresh_token', refresh_token: rt, client_id: CLIENT_ID });
             return fetch('https://accounts.spotify.com/api/token', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: body.toString()
             }).then(function(r) {
-                if (!r.ok) { doLogout(); return null; }
+                if (!r.ok) { log('Error refrescando token'); doLogout(); return null; }
                 return r.json();
             }).then(function(d) {
                 if (!d) return null;
                 sessionStorage.setItem('access_token', d.access_token);
                 if (d.refresh_token) sessionStorage.setItem('refresh_token', d.refresh_token);
                 sessionStorage.setItem('token_expires', Date.now() + d.expires_in * 1000);
+                log('Token refrescado');
                 return d.access_token;
             });
         }
+        log('Token válido');
         return Promise.resolve(token);
     }
 
     function doLogout() {
+        log('Logout');
         sessionStorage.clear();
         document.getElementById('appMain').classList.add('hidden');
         document.getElementById('loginScreen').classList.remove('hidden');
@@ -306,17 +322,19 @@
     function spotifyApi(endpoint, options) {
         options = options || {};
         return getValidToken().then(function(token) {
-            if (!token) { doLogout(); throw new Error('Sesión expirada'); }
+            if (!token) { doLogout(); throw new Error('Sesión expirada. Pulsa Reconectar.'); }
             var headers = { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' };
             var fetchOpts = { headers: headers };
             if (options.method) fetchOpts.method = options.method;
             if (options.body) fetchOpts.body = options.body;
+            log('API: ' + (options.method || 'GET') + ' ' + endpoint);
             return fetch('https://api.spotify.com/v1' + endpoint, fetchOpts);
         }).then(function(r) {
             if (r.status === 204) return null;
             if (!r.ok) {
                 return r.json().then(function(e) { 
                     var msg = (e.error && e.error.message) ? e.error.message : 'Error ' + r.status;
+                    log('Error API: ' + msg);
                     throw new Error(msg); 
                 }).catch(function() { throw new Error('Error ' + r.status); });
             }
@@ -330,6 +348,7 @@
             userName = d.display_name || d.id;
             document.getElementById('userName').textContent = userName;
             document.getElementById('userAvatar').textContent = userName.charAt(0).toUpperCase();
+            log('Usuario: ' + userName);
         });
     }
 
@@ -370,8 +389,10 @@
 
     function loadPlaylists() {
         showLoading('Cargando playlists...');
+        log('Cargando playlists del usuario...');
         getAllPlaylists().then(function(playlists) {
             allPlaylists = playlists;
+            log('Playlists cargadas: ' + allPlaylists.length);
             allPlaylists.sort(function(a,b) { return a.name.localeCompare(b.name); });
             var bs = document.getElementById('bachataSelect');
             var ss = document.getElementById('salsaSelect');
@@ -387,8 +408,8 @@
             showToast('Cargadas ' + allPlaylists.length + ' playlists', 'success');
             checkReady();
         }).catch(function(e) { 
-            showToast('Error: ' + e.message, 'error'); 
-            console.error(e);
+            log('Error cargando playlists: ' + e.message);
+            showToast('Error: ' + e.message + '. Pulsa Reconectar.', 'error'); 
         }).finally(hideLoading);
     }
 
@@ -408,22 +429,22 @@
         if (!pl) return;
         
         var img = '';
-        try {
-            if (pl.images && pl.images[0]) img = pl.images[0].url;
-        } catch(e) {}
+        try { if (pl.images && pl.images[0]) img = pl.images[0].url; } catch(e) {}
         
         var trackCount = (pl.tracks && pl.tracks.total !== undefined) ? pl.tracks.total : '?';
         prev.innerHTML = (img ? '<img src="'+img+'">' : '<div class="placeholder"></div>') + '<div class="playlist-info"><h4>'+pl.name+'</h4><p>'+trackCount+' canciones</p></div>';
         
         showLoading('Cargando canciones...');
+        log('Cargando tracks de: ' + pl.name + ' (' + plid + ')');
         getPlaylistTracks(plid).then(function(tracks) {
+            log('Tracks cargados: ' + tracks.length);
             if (type==='bachata') bachataTracks=tracks; else salsaTracks=tracks;
             var p = prev.querySelector('p'); 
             if (p) p.textContent = tracks.length + ' canciones cargadas';
             checkReady();
             showToast('Cargadas ' + tracks.length + ' canciones', 'success');
         }).catch(function(e) { 
-            console.error('Error cargando tracks:', e);
+            log('Error cargando tracks: ' + e.message);
             showToast('Error al cargar canciones: ' + e.message + '. Pulsa "Reconectar" para obtener nuevos permisos.', 'error');
             var p = prev.querySelector('p'); 
             if (p) p.textContent = 'Error al cargar - Pulsa Reconectar';
@@ -538,18 +559,20 @@
         var params = new URLSearchParams(window.location.search);
         var code = params.get('code');
         var error = params.get('error');
-        if (error) { showToast('Error: '+error,'error'); return; }
+        if (error) { log('Error de auth: ' + error); showToast('Error: '+error,'error'); return; }
         if (code) {
+            log('Code recibido, autenticando...');
             showLoading('Autenticando...');
             exchangeCodeForToken(code).then(function() { return getUserProfile(); }).then(function() {
                 document.getElementById('loginScreen').classList.add('hidden');
                 document.getElementById('appMain').classList.remove('hidden');
                 return loadPlaylists();
-            }).catch(function(e) { showToast('Error: '+e.message,'error'); console.error(e); }).finally(hideLoading);
+            }).catch(function(e) { log('Error auth: ' + e.message); showToast('Error: '+e.message,'error'); }).finally(hideLoading);
             return;
         }
         var saved = sessionStorage.getItem('access_token');
         if (saved) {
+            log('Token guardado encontrado');
             getValidToken().then(function(t) {
                 if (t) {
                     accessToken = t;
@@ -561,7 +584,7 @@
                     document.getElementById('appMain').classList.remove('hidden');
                     return loadPlaylists();
                 }
-            }).catch(function(e) { console.error(e); }).finally(hideLoading);
+            }).catch(function(e) { log('Error init: ' + e.message); }).finally(hideLoading);
             return;
         }
         hideLoading();
