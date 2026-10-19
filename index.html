@@ -15,155 +15,41 @@
             align-items: center;
             justify-content: center;
         }
-        .container {
-            text-align: center;
-            padding: 40px;
-            max-width: 600px;
-        }
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, #1DB954, #fff);
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+        .container { text-align: center; padding: 40px; max-width: 600px; }
+        h1 { font-size: 2.5rem; margin-bottom: 20px; background: linear-gradient(135deg, #1DB954, #fff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         p { color: #b3b3b3; margin-bottom: 30px; line-height: 1.6; }
-        .btn {
-            background: #1DB954;
-            color: #000;
-            border: none;
-            padding: 16px 48px;
-            border-radius: 50px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
+        .btn { background: #1DB954; color: #000; border: none; padding: 16px 48px; border-radius: 50px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.3s; }
         .btn:hover { transform: scale(1.05); background: #1ed760; }
-        .info {
-            background: #181818;
-            border: 1px solid #333;
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 30px;
-            text-align: left;
-        }
+        .info { background: #181818; border: 1px solid #333; border-radius: 12px; padding: 20px; margin-top: 30px; text-align: left; }
         .info h3 { color: #1DB954; margin-bottom: 12px; }
-        .info code {
-            background: #2a2a2a;
-            padding: 4px 8px;
-            border-radius: 4px;
-            color: #1DB954;
-            font-size: 0.9rem;
-        }
+        .info code { background: #2a2a2a; padding: 4px 8px; border-radius: 4px; color: #1DB954; font-size: 0.9rem; }
         .info ol { color: #b3b3b3; padding-left: 20px; line-height: 2; }
-        .uri-box {
-            background: #2a2a2a;
-            border: 2px solid #1DB954;
-            border-radius: 8px;
-            padding: 12px;
-            margin: 12px 0;
-            font-family: monospace;
-            font-size: 0.9rem;
-            color: #1DB954;
-            word-break: break-all;
-        }
+        .uri-box { background: #2a2a2a; border: 2px solid #1DB954; border-radius: 8px; padding: 12px; margin: 12px 0; font-family: monospace; font-size: 0.9rem; color: #1DB954; word-break: break-all; }
         .hidden { display: none !important; }
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: rgba(10,10,10,0.95);
-            padding: 20px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #333;
-        }
+        .header { position: fixed; top: 0; left: 0; right: 0; background: rgba(10,10,10,0.95); padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; }
         .header h1 { font-size: 1.2rem; margin: 0; }
         .user-info { display: flex; align-items: center; gap: 12px; }
-        .avatar {
-            width: 36px; height: 36px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 700;
-        }
-        .logout-btn {
-            background: rgba(255,255,255,0.1);
-            border: none;
-            color: #b3b3b3;
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.85rem;
-        }
+        .avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; font-weight: 700; }
+        .logout-btn { background: rgba(255,255,255,0.1); border: none; color: #b3b3b3; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; }
         .logout-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
         .app-content { padding: 100px 30px 30px; max-width: 1200px; margin: 0 auto; }
-        .config-panel {
-            background: #181818;
-            border: 1px solid #333;
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 24px;
-        }
+        .config-panel { background: #181818; border: 1px solid #333; border-radius: 12px; padding: 24px; margin-bottom: 24px; }
         .config-panel h3 { color: #b3b3b3; margin-bottom: 16px; font-size: 1rem; }
         .config-row { display: flex; gap: 16px; flex-wrap: wrap; }
         .config-group { flex: 1; min-width: 150px; }
-        .config-group label {
-            display: block;
-            font-size: 0.8rem;
-            color: #727272;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-        }
-        .config-group input, .config-group select {
-            width: 100%;
-            padding: 10px 14px;
-            background: #2a2a2a;
-            border: 1px solid #333;
-            border-radius: 8px;
-            color: #fff;
-            font-size: 0.95rem;
-        }
-        .config-group input:focus, .config-group select:focus {
-            outline: none;
-            border-color: #1DB954;
-        }
+        .config-group label { display: block; font-size: 0.8rem; color: #727272; margin-bottom: 6px; text-transform: uppercase; }
+        .config-group input, .config-group select { width: 100%; padding: 10px 14px; background: #2a2a2a; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 0.95rem; }
+        .config-group input:focus, .config-group select:focus { outline: none; border-color: #1DB954; }
         .playlists-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
         @media (max-width: 768px) { .playlists-grid { grid-template-columns: 1fr; } }
-        .playlist-card {
-            background: #181818;
-            border: 1px solid #333;
-            border-radius: 12px;
-            padding: 24px;
-        }
+        .playlist-card { background: #181818; border: 1px solid #333; border-radius: 12px; padding: 24px; }
         .playlist-card.bachata { border-top: 3px solid #e74c3c; }
         .playlist-card.salsa { border-top: 3px solid #f39c12; }
         .playlist-card h3 { margin-bottom: 12px; }
         .playlist-card.bachata h3 { color: #e74c3c; }
         .playlist-card.salsa h3 { color: #f39c12; }
-        .playlist-select {
-            width: 100%;
-            padding: 12px;
-            background: #2a2a2a;
-            border: 1px solid #333;
-            border-radius: 8px;
-            color: #fff;
-            font-size: 0.95rem;
-            margin-bottom: 12px;
-        }
-        .playlist-preview {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            background: #2a2a2a;
-            border-radius: 8px;
-            min-height: 80px;
-        }
+        .playlist-select { width: 100%; padding: 12px; background: #2a2a2a; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 0.95rem; margin-bottom: 12px; }
+        .playlist-preview { display: flex; align-items: center; gap: 12px; padding: 12px; background: #2a2a2a; border-radius: 8px; min-height: 80px; }
         .playlist-preview img { width: 64px; height: 64px; border-radius: 8px; object-fit: cover; }
         .placeholder { width: 64px; height: 64px; border-radius: 8px; background: #333; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
         .playlist-info h4 { font-size: 0.9rem; margin-bottom: 4px; }
@@ -174,40 +60,18 @@
         .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-secondary { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid #333; padding: 12px 24px; border-radius: 50px; font-weight: 600; cursor: pointer; font-size: 0.95rem; }
         .btn-secondary:hover { background: rgba(255,255,255,0.15); }
-        .progress-section {
-            background: #181818;
-            border: 1px solid #333;
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 24px;
-            display: none;
-        }
+        .progress-section { background: #181818; border: 1px solid #333; border-radius: 12px; padding: 24px; margin-bottom: 24px; display: none; }
         .progress-section.active { display: block; }
         .progress-header { display: flex; justify-content: space-between; margin-bottom: 12px; }
         .progress-header h4 { color: #b3b3b3; font-size: 0.95rem; }
         .progress-header span { color: #1DB954; font-weight: 600; font-size: 0.85rem; }
         .progress-bar-bg { width: 100%; height: 8px; background: #2a2a2a; border-radius: 4px; overflow: hidden; margin-bottom: 12px; }
         .progress-bar { height: 100%; background: #1DB954; width: 0%; transition: width 0.3s; }
-        .progress-log {
-            max-height: 150px;
-            overflow-y: auto;
-            font-size: 0.8rem;
-            color: #727272;
-            line-height: 1.8;
-            padding: 12px;
-            background: #0a0a0a;
-            border-radius: 8px;
-        }
+        .progress-log { max-height: 150px; overflow-y: auto; font-size: 0.8rem; color: #727272; line-height: 1.8; padding: 12px; background: #0a0a0a; border-radius: 8px; }
         .log-entry.success { color: #1DB954; }
         .log-entry.error { color: #e74c3c; }
         .log-entry.info { color: #3498db; }
-        .result-section {
-            background: #181818;
-            border: 1px solid #1DB954;
-            border-radius: 12px;
-            padding: 24px;
-            display: none;
-        }
+        .result-section { background: #181818; border: 1px solid #1DB954; border-radius: 12px; padding: 24px; display: none; }
         .result-section.active { display: block; }
         .result-section h3 { color: #1DB954; margin-bottom: 12px; }
         .result-section p { color: #b3b3b3; line-height: 1.6; }
@@ -216,32 +80,11 @@
         .checkbox-group input { width: 18px; height: 18px; accent-color: #1DB954; }
         .checkbox-group label { color: #b3b3b3; font-size: 0.9rem; cursor: pointer; }
         .toast-container { position: fixed; top: 80px; right: 20px; z-index: 1000; }
-        .toast {
-            background: #181818;
-            border: 1px solid #333;
-            border-radius: 8px;
-            padding: 14px 20px;
-            margin-bottom: 10px;
-            min-width: 300px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            animation: slideIn 0.3s;
-        }
+        .toast { background: #181818; border: 1px solid #333; border-radius: 8px; padding: 14px 20px; margin-bottom: 10px; min-width: 300px; display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s; }
         .toast.success { border-left: 3px solid #1DB954; }
         .toast.error { border-left: 3px solid #e74c3c; }
         @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
-        .loading-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.7);
-            z-index: 500;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            gap: 16px;
-        }
+        .loading-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 500; align-items: center; justify-content: center; flex-direction: column; gap: 16px; }
         .loading-overlay.active { display: flex; }
         .spinner { width: 48px; height: 48px; border: 3px solid rgba(255,255,255,0.1); border-top-color: #1DB954; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -255,7 +98,6 @@
         <p id="loadingText">Cargando...</p>
     </div>
 
-    <!-- LOGIN SCREEN -->
     <div class="container" id="loginScreen">
         <h1>Bachata & Salsa Mixer</h1>
         <p>Mezcla tus playlists de Bachata y Salsa creando listas perfectas con la proporción que elijas.</p>
@@ -263,7 +105,7 @@
         <div class="info">
             <h3>Configuración requerida</h3>
             <p style="margin-bottom:12px;">El Redirect URI debe coincidir EXACTAMENTE:</p>
-            <div class="uri-box" id="uriBox">https://pi-spoty.vercel.app/</div>
+            <div class="uri-box">https://pi-spoty.vercel.app/</div>
             <ol>
                 <li>Ve a <a href="https://developer.spotify.com/dashboard" target="_blank" style="color:#1DB954">Spotify Developer Dashboard</a></li>
                 <li>Entra en tu app → <strong>Edit Settings</strong></li>
@@ -275,7 +117,6 @@
         </div>
     </div>
 
-    <!-- APP MAIN -->
     <div class="hidden" id="appMain">
         <div class="header">
             <h1>Bachata & Salsa Mixer</h1>
@@ -353,8 +194,9 @@
     </div>
 
     <script>
+    // URI HARDCODEADO - NO CAMBIAR
+    var REDIRECT_URI = 'https://pi-spoty.vercel.app/';
     var CLIENT_ID = '6a5a091a22044ef58f9a5114f0daab5b';
-    var REDIRECT_URI = window.location.origin + '/';
     var SCOPES = 'playlist-read-private playlist-modify-public playlist-modify-private user-read-private';
 
     var accessToken = '', userId = '', userName = '';
@@ -393,7 +235,7 @@
                 code_challenge: codeChallenge,
                 redirect_uri: REDIRECT_URI
             });
-            window.location.href = 'https://pi-spoty.vercel.app' + params.toString();
+            window.location.href = 'https://accounts.spotify.com/authorize?' + params.toString();
         });
     }
 
@@ -417,7 +259,8 @@
             sessionStorage.setItem('access_token', data.access_token);
             if (data.refresh_token) sessionStorage.setItem('refresh_token', data.refresh_token);
             sessionStorage.setItem('token_expires', Date.now() + data.expires_in * 1000);
-            window.location.href = window.location.origin + '/';
+            // Limpiar URL y recargar
+            window.history.replaceState({}, document.title, REDIRECT_URI);
             return data.access_token;
         });
     }
