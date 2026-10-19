@@ -268,10 +268,10 @@
                 <li>Ve a <a href="https://developer.spotify.com/dashboard" target="_blank" style="color:#1DB954">Spotify Developer Dashboard</a></li>
                 <li>Entra en tu app → <strong>Edit Settings</strong></li>
                 <li>Elimina todos los URIs existentes</li>
-                <li>Añade: <code>  https://pi-spoty.vercel.app/callback</code></li>
+                <li>Añade: <code>https://pi-spoty.vercel.app/callback</code></li>
                 <li>Clic en <strong>Add</strong> → <strong>Save</strong></li>
-                <li>Inicia el servidor: <code>python -m http.server 8888</code> en la carpeta del archivo</li>
-                <li>Abre <code>  https://pi-spoty.vercel.app/callback</code></li>
+                <li>Abre <code>https://pi-spoty.vercel.app/</code> en tu navegador</li>
+                <li>Pulsa "Conectar con Spotify" y autoriza</li>
             </ol>
         </div>
     </div>
@@ -355,7 +355,7 @@
 
     <script>
     var CLIENT_ID = '6a5a091a22044ef58f9a5114f0daab5b';
-    var REDIRECT_URI ='https://pi-spoty.vercel.app/callback';
+    var REDIRECT_URI = 'https://pi-spoty.vercel.app/callback';
     var SCOPES = 'playlist-read-private playlist-modify-public playlist-modify-private user-read-private';
 
     var accessToken = '', userId = '', userName = '';
