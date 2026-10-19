@@ -196,7 +196,7 @@
     <script>
     var REDIRECT_URI = 'https://pl-spoty.vercel.app/';
     var CLIENT_ID = '6a5a091a22044ef58f9a5114f0daab5b';
-    var SCOPES = 'playlist-read-private playlist-modify-public playlist-modify-private user-read-private';
+    var SCOPES = 'playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private user-read-private';
 
     var accessToken = '', userId = '', userName = '';
     var allPlaylists = [], bachataTracks = [], salsaTracks = [];
@@ -338,7 +338,12 @@
                 for (var i = 0; i < d.items.length; i++) {
                     var item = d.items[i];
                     if (item.track && item.track.id) {
-                        var img = (item.track.album && item.track.album.images && item.track.album.images[0]) ? item.track.album.images[0].url : '';
+                        var img = '';
+                        try {
+                            if (item.track.album && item.track.album.images && item.track.album.images[0]) {
+                                img = item.track.album.images[0].url;
+                            }
+                        } catch(e) { /* Ignorar error de imágenes */ }
                         var artists = [];
                         for (var j = 0; j < item.track.artists.length; j++) artists.push(item.track.artists[j].name);
                         tracks.push({ id: item.track.id, name: item.track.name, artist: artists.join(', '), uri: 'spotify:track:' + item.track.id, image: img });
@@ -361,7 +366,6 @@
             ss.innerHTML = '<option value="">-- Salsa --</option>';
             for (var i = 0; i < allPlaylists.length; i++) {
                 var pl = allPlaylists[i];
-                // CORRECCIÓN 1: Verificar si tracks existe antes de leer .total
                 var trackCount = (pl.tracks && pl.tracks.total !== undefined) ? pl.tracks.total : '?';
                 var txt = pl.name + ' (' + trackCount + ')';
                 var o1 = document.createElement('option'); o1.value = pl.id; o1.textContent = txt; bs.appendChild(o1);
@@ -389,18 +393,27 @@
         var pl = null;
         for (var i=0; i<allPlaylists.length; i++) if (allPlaylists[i].id===plid) { pl=allPlaylists[i]; break; }
         if (!pl) return;
-        var img = (pl.images && pl.images[0]) ? pl.images[0].url : '';
         
-        // CORRECCIÓN 2: Verificar si tracks existe antes de leer .total
+        var img = '';
+        try {
+            if (pl.images && pl.images[0]) img = pl.images[0].url;
+        } catch(e) { /* Ignorar */ }
+        
         var trackCount = (pl.tracks && pl.tracks.total !== undefined) ? pl.tracks.total : '?';
         prev.innerHTML = (img ? '<img src="'+img+'">' : '<div class="placeholder"></div>') + '<div class="playlist-info"><h4>'+pl.name+'</h4><p>'+trackCount+' canciones</p></div>';
         
         showLoading('Cargando canciones...');
         getPlaylistTracks(plid).then(function(tracks) {
             if (type==='bachata') bachataTracks=tracks; else salsaTracks=tracks;
-            var p = prev.querySelector('p'); if (p) p.textContent = tracks.length+' canciones cargadas';
+            var p = prev.querySelector('p'); 
+            if (p) p.textContent = tracks.length + ' canciones cargadas';
             checkReady();
-        }).catch(function(e) { showToast('Error: '+e.message,'error'); }).finally(hideLoading);
+        }).catch(function(e) { 
+            console.error('Error cargando tracks:', e);
+            showToast('Error al cargar canciones: ' + e.message + '. Intenta recargar o seleccionar otra playlist.', 'error');
+            var p = prev.querySelector('p'); 
+            if (p) p.textContent = 'Error al cargar';
+        }).finally(hideLoading);
     }
 
     function checkReady() {
