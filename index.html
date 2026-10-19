@@ -14,9 +14,7 @@
         .btn:hover { transform: scale(1.05); background: #1ed760; }
         .info { background: #181818; border: 1px solid #333; border-radius: 12px; padding: 20px; margin-top: 30px; text-align: left; }
         .info h3 { color: #1DB954; margin-bottom: 12px; }
-        .info code { background: #2a2a2a; padding: 4px 8px; border-radius: 4px; color: #1DB954; font-size: 0.9rem; }
         .info ol { color: #b3b3b3; padding-left: 20px; line-height: 2; }
-        .uri-box { background: #2a2a2a; border: 2px solid #1DB954; border-radius: 8px; padding: 12px; margin: 12px 0; font-family: monospace; font-size: 0.9rem; color: #1DB954; word-break: break-all; }
         .hidden { display: none !important; }
         .header { position: fixed; top: 0; left: 0; right: 0; background: rgba(10,10,10,0.95); padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; z-index: 100; }
         .header h1 { font-size: 1.2rem; margin: 0; }
@@ -46,8 +44,9 @@
         .playlist-preview { display: flex; align-items: center; gap: 12px; padding: 12px; background: #2a2a2a; border-radius: 8px; min-height: 80px; }
         .playlist-preview img { width: 64px; height: 64px; border-radius: 8px; object-fit: cover; }
         .placeholder { width: 64px; height: 64px; border-radius: 8px; background: #333; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+        .playlist-info { text-align: left; }
         .playlist-info h4 { font-size: 0.9rem; margin-bottom: 4px; }
-        .playlist-info p { font-size: 0.8rem; color: #727272; }
+        .playlist-info p { font-size: 0.8rem; color: #727272; margin: 0; }
         .actions { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
         .btn-primary { background: #1DB954; color: #000; border: none; padding: 12px 24px; border-radius: 50px; font-weight: 600; cursor: pointer; font-size: 0.95rem; }
         .btn-primary:hover:not(:disabled) { background: #1ed760; }
@@ -74,7 +73,7 @@
         .checkbox-group input { width: 18px; height: 18px; accent-color: #1DB954; }
         .checkbox-group label { color: #b3b3b3; font-size: 0.9rem; cursor: pointer; }
         .toast-container { position: fixed; top: 80px; right: 20px; z-index: 1000; }
-        .toast { background: #181818; border: 1px solid #333; border-radius: 8px; padding: 14px 20px; margin-bottom: 10px; min-width: 300px; display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s; }
+        .toast { background: #181818; border: 1px solid #333; border-radius: 8px; padding: 14px 20px; margin-bottom: 10px; min-width: 300px; max-width: 420px; display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s; transition: opacity .3s; }
         .toast.success { border-left: 3px solid #1DB954; }
         .toast.error { border-left: 3px solid #e74c3c; }
         @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
@@ -97,12 +96,10 @@
         <p>Mezcla tus playlists de Bachata y Salsa creando listas perfectas con la proporción que elijas.</p>
         <button class="btn" onclick="doLogin()">Conectar con Spotify</button>
         <div class="info">
-            <h3>⚠️ Importante: Si ya conectaste antes</h3>
+            <h3>ℹ️ Notas</h3>
             <ol>
-                <li>Ve a <a href="https://www.spotify.com/account/apps/" target="_blank" style="color:#1DB954">spotify.com/account/apps/</a></li>
-                <li>Busca tu app y haz clic en <strong>"Remove Access"</strong></li>
-                <li>Vuelve aquí y pulsa "Conectar con Spotify"</li>
-                <li><strong>Acepta TODOS los permisos</strong> que te pida Spotify</li>
+                <li>Solo funcionan <strong>tus propias playlists</strong> (o colaborativas).</li>
+                <li>Tu usuario debe estar añadido en "User Management" de la app en el Dashboard de Spotify.</li>
             </ol>
         </div>
     </div>
@@ -146,20 +143,14 @@
                     <select id="bachataSelect" class="playlist-select" onchange="onPlaylistSelect('bachata')">
                         <option value="">Cargando...</option>
                     </select>
-                    <div class="playlist-preview" id="bachataPreview">
-                        <div class="placeholder"></div>
-                        <div class="playlist-info"><h4>Selecciona</h4><p>Playlist de Bachata</p></div>
-                    </div>
+                    <div class="playlist-preview" id="bachataPreview"></div>
                 </div>
                 <div class="playlist-card salsa">
                     <h3>Salsa</h3>
                     <select id="salsaSelect" class="playlist-select" onchange="onPlaylistSelect('salsa')">
                         <option value="">Cargando...</option>
                     </select>
-                    <div class="playlist-preview" id="salsaPreview">
-                        <div class="placeholder"></div>
-                        <div class="playlist-info"><h4>Selecciona</h4><p>Playlist de Salsa</p></div>
-                    </div>
+                    <div class="playlist-preview" id="salsaPreview"></div>
                 </div>
             </div>
 
@@ -189,9 +180,10 @@
     var CLIENT_ID = '6a5a091a22044ef58f9a5114f0daab5b';
     var SCOPES = 'user-read-private user-read-email playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private';
 
-    var accessToken = '', userId = '', userName = '';
+    var userId = '', userName = '';
     var allPlaylists = [], bachataTracks = [], salsaTracks = [];
 
+    /* ---------- Utilidades ---------- */
     function generateRandomString(length) {
         var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         var values = crypto.getRandomValues(new Uint8Array(length));
@@ -199,31 +191,31 @@
         for (var i = 0; i < length; i++) result += possible[values[i] % possible.length];
         return result;
     }
-
     function sha256(plain) {
-        var encoder = new TextEncoder();
-        return window.crypto.subtle.digest('SHA-256', encoder.encode(plain));
+        return window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(plain));
     }
-
     function base64urlencode(input) {
-        var bytes = new Uint8Array(input);
-        var binary = '';
+        var bytes = new Uint8Array(input), binary = '';
         for (var i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
         return btoa(binary).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
     }
+    function clampInt(id, def) {
+        var v = parseInt(document.getElementById(id).value, 10);
+        return (isNaN(v) || v < 1) ? def : Math.min(v, 20);
+    }
 
+    /* ---------- Auth ---------- */
     function doLogin() {
         sessionStorage.clear();
         var codeVerifier = generateRandomString(64);
         sessionStorage.setItem('code_verifier', codeVerifier);
         sha256(codeVerifier).then(function(hashed) {
-            var codeChallenge = base64urlencode(hashed);
             var params = new URLSearchParams({
                 response_type: 'code',
                 client_id: CLIENT_ID,
                 scope: SCOPES,
                 code_challenge_method: 'S256',
-                code_challenge: codeChallenge,
+                code_challenge: base64urlencode(hashed),
                 redirect_uri: REDIRECT_URI,
                 show_dialog: 'true'
             });
@@ -232,19 +224,16 @@
     }
 
     function forceReconnect() {
-        if (confirm('¿Reconectar con Spotify? Se solicitarán todos los permisos necesarios.')) {
-            doLogin();
-        }
+        if (confirm('¿Reconectar con Spotify?')) doLogin();
     }
 
     function exchangeCodeForToken(code) {
-        var codeVerifier = sessionStorage.getItem('code_verifier');
         var body = new URLSearchParams({
             grant_type: 'authorization_code',
             code: code,
             redirect_uri: REDIRECT_URI,
             client_id: CLIENT_ID,
-            code_verifier: codeVerifier
+            code_verifier: sessionStorage.getItem('code_verifier')
         });
         return fetch('https://accounts.spotify.com/api/token', {
             method: 'POST',
@@ -266,7 +255,7 @@
         var token = sessionStorage.getItem('access_token');
         var expires = sessionStorage.getItem('token_expires');
         if (!token) return Promise.resolve(null);
-        if (expires && Date.now() > parseInt(expires) - 60000) {
+        if (expires && Date.now() > parseInt(expires, 10) - 60000) {
             var rt = sessionStorage.getItem('refresh_token');
             if (!rt) { doLogout(); return Promise.resolve(null); }
             var body = new URLSearchParams({ grant_type: 'refresh_token', refresh_token: rt, client_id: CLIENT_ID });
@@ -294,22 +283,23 @@
         document.getElementById('loginScreen').classList.remove('hidden');
     }
 
+    /* ---------- API ---------- */
+    // Corregido: ahora el mensaje de error real de Spotify llega hasta la interfaz
     function spotifyApi(endpoint, options) {
         options = options || {};
         return getValidToken().then(function(token) {
             if (!token) { doLogout(); throw new Error('Sesión expirada'); }
-            var headers = { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' };
-            var fetchOpts = { headers: headers };
+            var fetchOpts = { headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' } };
             if (options.method) fetchOpts.method = options.method;
             if (options.body) fetchOpts.body = options.body;
             return fetch('https://api.spotify.com/v1' + endpoint, fetchOpts);
         }).then(function(r) {
             if (r.status === 204) return null;
             if (!r.ok) {
-                return r.json().then(function(e) { 
+                return r.json().catch(function() { return {}; }).then(function(e) {
                     var msg = (e.error && e.error.message) ? e.error.message : 'Error ' + r.status;
-                    throw new Error(msg); 
-                }).catch(function() { throw new Error('Error ' + r.status); });
+                    throw new Error(r.status + ' - ' + msg);
+                });
             }
             return r.json();
         });
@@ -329,116 +319,146 @@
         function fetchPage(url) {
             return spotifyApi(url).then(function(d) {
                 list = list.concat(d.items);
-                return d.next ? fetchPage(d.next.replace('https://api.spotify.com/v1','')) : list;
+                return d.next ? fetchPage(d.next.replace('https://api.spotify.com/v1', '')) : list;
             });
         }
         return fetchPage('/me/playlists?limit=50');
     }
 
+    // Spotify renombró el campo tracks -> items en los objetos playlist (se soportan ambos)
+    function playlistTotal(pl) {
+        if (pl.items && pl.items.total !== undefined) return pl.items.total;
+        if (pl.tracks && pl.tracks.total !== undefined) return pl.tracks.total;
+        return '?';
+    }
+
+    // Corregido: endpoint /items (antes /tracks) y sin parámetro fields
     function getPlaylistTracks(pid) {
         var tracks = [];
         function fetchPage(url) {
             return spotifyApi(url).then(function(d) {
                 for (var i = 0; i < d.items.length; i++) {
                     var item = d.items[i];
-                    if (item.track && item.track.id) {
-                        var img = '';
-                        try {
-                            if (item.track.album && item.track.album.images && item.track.album.images[0]) {
-                                img = item.track.album.images[0].url;
-                            }
-                        } catch(e) {}
-                        var artists = [];
-                        for (var j = 0; j < item.track.artists.length; j++) artists.push(item.track.artists[j].name);
-                        tracks.push({ id: item.track.id, name: item.track.name, artist: artists.join(', '), uri: 'spotify:track:' + item.track.id, image: img });
+                    // Soporta el formato nuevo (item.item) y el antiguo (item.track)
+                    var t = item.item || item.track;
+                    if (t && t.id && (!t.type || t.type === 'track')) {
+                        var img = (t.album && t.album.images && t.album.images[0]) ? t.album.images[0].url : '';
+                        var artists = (t.artists || []).map(function(a) { return a.name; });
+                        tracks.push({ id: t.id, name: t.name, artist: artists.join(', '), uri: t.uri || ('spotify:track:' + t.id), image: img });
                     }
                 }
-                return d.next ? fetchPage(d.next.replace('https://api.spotify.com/v1','')) : tracks;
+                return d.next ? fetchPage(d.next.replace('https://api.spotify.com/v1', '')) : tracks;
             });
         }
-        return fetchPage('/playlists/' + pid + '/tracks?limit=100&fields=items(track(id,name,artists(name),album(images))),next');
+        return fetchPage('/playlists/' + pid + '/items?limit=50');
+    }
+
+    /* ---------- UI ---------- */
+    function renderPreview(el, imgUrl, title, subtitle) {
+        el.textContent = '';
+        if (imgUrl) {
+            var img = document.createElement('img');
+            img.src = imgUrl;
+            el.appendChild(img);
+        } else {
+            var ph = document.createElement('div');
+            ph.className = 'placeholder';
+            el.appendChild(ph);
+        }
+        var info = document.createElement('div');
+        info.className = 'playlist-info';
+        var h = document.createElement('h4'); h.textContent = title;
+        var p = document.createElement('p'); p.textContent = subtitle;
+        info.appendChild(h); info.appendChild(p);
+        el.appendChild(info);
+    }
+
+    function resetPreview(type) {
+        renderPreview(document.getElementById(type + 'Preview'), '', 'Selecciona', 'Playlist de ' + (type === 'bachata' ? 'Bachata' : 'Salsa'));
     }
 
     function loadPlaylists() {
         showLoading('Cargando playlists...');
         getAllPlaylists().then(function(playlists) {
-            allPlaylists = playlists;
-            allPlaylists.sort(function(a,b) { return a.name.localeCompare(b.name); });
+            // Solo tus playlists o colaborativas: el resto da 403 con las nuevas reglas
+            allPlaylists = playlists.filter(function(p) {
+                return p && (p.collaborative || (p.owner && p.owner.id === userId));
+            });
+            allPlaylists.sort(function(a, b) { return a.name.localeCompare(b.name); });
+
             var bs = document.getElementById('bachataSelect');
             var ss = document.getElementById('salsaSelect');
             bs.innerHTML = '<option value="">-- Bachata --</option>';
             ss.innerHTML = '<option value="">-- Salsa --</option>';
-            for (var i = 0; i < allPlaylists.length; i++) {
-                var pl = allPlaylists[i];
-                var trackCount = (pl.tracks && pl.tracks.total !== undefined) ? pl.tracks.total : '?';
-                var txt = pl.name + ' (' + trackCount + ')';
-                var o1 = document.createElement('option'); o1.value = pl.id; o1.textContent = txt; bs.appendChild(o1);
-                var o2 = document.createElement('option'); o2.value = pl.id; o2.textContent = txt; ss.appendChild(o2);
-            }
-            showToast('Cargadas ' + allPlaylists.length + ' playlists', 'success');
+            allPlaylists.forEach(function(pl) {
+                var txt = pl.name + ' (' + playlistTotal(pl) + ')';
+                [bs, ss].forEach(function(sel) {
+                    var o = document.createElement('option');
+                    o.value = pl.id; o.textContent = txt;
+                    sel.appendChild(o);
+                });
+            });
+            bachataTracks = []; salsaTracks = [];
+            resetPreview('bachata'); resetPreview('salsa');
+            showToast('Cargadas ' + allPlaylists.length + ' playlists tuyas', 'success');
             checkReady();
-        }).catch(function(e) { 
-            showToast('Error: ' + e.message + '. Pulsa Reconectar.', 'error'); 
+        }).catch(function(e) {
+            showToast('Error: ' + e.message, 'error');
             console.error(e);
         }).finally(hideLoading);
     }
 
     function onPlaylistSelect(type) {
-        var sid = type === 'bachata' ? 'bachataSelect' : 'salsaSelect';
-        var pid = type === 'bachata' ? 'bachataPreview' : 'salsaPreview';
-        var sel = document.getElementById(sid);
-        var prev = document.getElementById(pid);
+        var sel = document.getElementById(type + 'Select');
+        var prev = document.getElementById(type + 'Preview');
         var plid = sel.value;
         if (!plid) {
-            prev.innerHTML = '<div class="placeholder"></div><div class="playlist-info"><h4>Selecciona</h4><p>Playlist de ' + (type==='bachata'?'Bachata':'Salsa') + '</p></div>';
-            if (type==='bachata') bachataTracks=[]; else salsaTracks=[];
-            checkReady(); return;
+            resetPreview(type);
+            if (type === 'bachata') bachataTracks = []; else salsaTracks = [];
+            checkReady();
+            return;
         }
-        var pl = null;
-        for (var i=0; i<allPlaylists.length; i++) if (allPlaylists[i].id===plid) { pl=allPlaylists[i]; break; }
+        var pl = allPlaylists.filter(function(p) { return p.id === plid; })[0];
         if (!pl) return;
-        
-        var img = '';
-        try { if (pl.images && pl.images[0]) img = pl.images[0].url; } catch(e) {}
-        
-        var trackCount = (pl.tracks && pl.tracks.total !== undefined) ? pl.tracks.total : '?';
-        prev.innerHTML = (img ? '<img src="'+img+'">' : '<div class="placeholder"></div>') + '<div class="playlist-info"><h4>'+pl.name+'</h4><p>'+trackCount+' canciones</p></div>';
-        
+
+        var img = (pl.images && pl.images[0]) ? pl.images[0].url : '';
+        renderPreview(prev, img, pl.name, 'Cargando canciones...');
+
         showLoading('Cargando canciones...');
         getPlaylistTracks(plid).then(function(tracks) {
-            if (type==='bachata') bachataTracks=tracks; else salsaTracks=tracks;
-            var p = prev.querySelector('p'); 
-            if (p) p.textContent = tracks.length + ' canciones cargadas';
+            if (type === 'bachata') bachataTracks = tracks; else salsaTracks = tracks;
+            renderPreview(prev, img, pl.name, tracks.length + ' canciones cargadas');
             checkReady();
             showToast('Cargadas ' + tracks.length + ' canciones', 'success');
-        }).catch(function(e) { 
+        }).catch(function(e) {
             console.error('Error cargando tracks:', e);
-            showToast('Error 403: Ve a spotify.com/account/apps/ y revoca el acceso, luego reconecta.', 'error');
-            var p = prev.querySelector('p'); 
-            if (p) p.textContent = 'Error 403 - Revoca acceso en Spotify';
+            if (type === 'bachata') bachataTracks = []; else salsaTracks = [];
+            renderPreview(prev, img, pl.name, 'Error: ' + e.message);
+            showToast('Error: ' + e.message, 'error');
+            checkReady();
         }).finally(hideLoading);
     }
 
     function checkReady() {
-        document.getElementById('btnCreate').disabled = !(bachataTracks.length>0 && salsaTracks.length>0);
+        document.getElementById('btnCreate').disabled = !(bachataTracks.length > 0 && salsaTracks.length > 0);
     }
 
     function shuffleArray(arr) {
         var s = arr.slice();
-        for (var i=s.length-1; i>0; i--) { var j=Math.floor(Math.random()*(i+1)); var t=s[i]; s[i]=s[j]; s[j]=t; }
+        for (var i = s.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = s[i]; s[i] = s[j]; s[j] = t; }
         return s;
     }
 
     function generateMixed() {
-        var bp = parseInt(document.getElementById('bachataCount').value)||3;
-        var sp = parseInt(document.getElementById('salsaCount').value)||2;
+        var bp = clampInt('bachataCount', 3);
+        var sp = clampInt('salsaCount', 2);
         var sh = document.getElementById('shuffleCheck').checked;
         var b = sh ? shuffleArray(bachataTracks) : bachataTracks.slice();
         var s = sh ? shuffleArray(salsaTracks) : salsaTracks.slice();
-        var mixed=[], bi=0, si=0;
-        while (bi<b.length || si<s.length) {
-            for (var i=0; i<bp && bi<b.length; i++) { mixed.push(b[bi]); bi++; }
-            for (var j=0; j<sp && si<s.length; j++) { mixed.push(s[si]); si++; }
+        var mixed = [], bi = 0, si = 0;
+        while (bi < b.length || si < s.length) {
+            for (var i = 0; i < bp && bi < b.length; i++) mixed.push(b[bi++]);
+            for (var j = 0; j < sp && si < s.length; j++) mixed.push(s[si++]);
         }
         return mixed;
     }
@@ -450,110 +470,119 @@
         var pb = document.getElementById('progressBar');
         var pc = document.getElementById('progressCount');
         var pt = document.getElementById('progressTitle');
-        var pl = document.getElementById('progressLog');
+        var plog = document.getElementById('progressLog');
         var rs = document.getElementById('resultSection');
         ps.classList.add('active'); rs.classList.remove('active');
-        pb.style.width='0%'; pl.innerHTML='';
-        pt.textContent='Generando...';
-        var name = document.getElementById('playlistName').value.trim()||'Mi Mix';
-        addLog('Generando secuencia...','info');
+        pb.style.width = '0%'; plog.innerHTML = '';
+        pt.textContent = 'Generando...';
+
+        var name = document.getElementById('playlistName').value.trim() || 'Mi Mix';
+        var bp = clampInt('bachataCount', 3);
+        var sp = clampInt('salsaCount', 2);
+        addLog('Generando secuencia...', 'info');
         var mixed = generateMixed();
-        if (mixed.length===0) { addLog('Sin canciones','error'); btn.disabled=false; btn.textContent='Crear Playlist Mixta'; return; }
-        var bp = parseInt(document.getElementById('bachataCount').value)||3;
-        var sp = parseInt(document.getElementById('salsaCount').value)||2;
-        addLog('Proporción: '+bp+' Bachata + '+sp+' Salsa','info');
-        addLog('Total: '+mixed.length+' canciones','info');
-        var uris = [];
-        for (var k=0; k<mixed.length; k++) uris.push(mixed[k].uri);
-        pt.textContent='Creando playlist...';
-        addLog('Creando "'+name+'"...','info');
-        spotifyApi('/users/'+userId+'/playlists',{method:'POST',body:JSON.stringify({name:name,description:'Mix '+bp+':'+sp,public:false})}).then(function(np) {
+        if (mixed.length === 0) {
+            addLog('Sin canciones', 'error');
+            btn.disabled = false; btn.textContent = 'Crear Playlist Mixta';
+            return;
+        }
+        addLog('Proporción: ' + bp + ' Bachata + ' + sp + ' Salsa', 'info');
+        addLog('Total: ' + mixed.length + ' canciones', 'info');
+        var uris = mixed.map(function(m) { return m.uri; });
+
+        pt.textContent = 'Creando playlist...';
+        addLog('Creando "' + name + '"...', 'info');
+
+        // Corregido: POST /me/playlists (antes /users/{id}/playlists)
+        spotifyApi('/me/playlists', { method: 'POST', body: JSON.stringify({ name: name, description: 'Mix ' + bp + ':' + sp, public: false }) }).then(function(np) {
             var pid = np.id;
-            var url = np.external_urls ? np.external_urls.spotify : 'https://open.spotify.com/playlist/'+pid;
-            addLog('Playlist creada!','success');
-            pt.textContent='Añadiendo canciones...';
+            var url = (np.external_urls && np.external_urls.spotify) ? np.external_urls.spotify : 'https://open.spotify.com/playlist/' + pid;
+            addLog('Playlist creada!', 'success');
+            pt.textContent = 'Añadiendo canciones...';
+
             var chunks = [];
-            for (var i=0; i<uris.length; i+=100) chunks.push(uris.slice(i,i+100));
-            var processed=0, total=uris.length;
+            for (var i = 0; i < uris.length; i += 100) chunks.push(uris.slice(i, i + 100));
+            var processed = 0, total = uris.length;
             var chain = Promise.resolve();
-            for (var c=0; c<chunks.length; c++) {
-                (function(chunk, idx) {
-                    chain = chain.then(function() {
-                        return spotifyApi('/playlists/'+pid+'/tracks',{method:'POST',body:JSON.stringify({uris:chunk})});
-                    }).then(function() {
-                        processed += chunk.length;
-                        var pct = Math.round(processed/total*100);
-                        pb.style.width = pct+'%';
-                        pc.textContent = processed+' / '+total;
-                        addLog('Bloque '+(idx+1)+'/'+chunks.length+' ('+chunk.length+')','success');
-                    });
-                })(chunks[c], c);
-            }
+            chunks.forEach(function(chunk, idx) {
+                chain = chain.then(function() {
+                    // Corregido: POST /playlists/{id}/items (antes /tracks)
+                    return spotifyApi('/playlists/' + pid + '/items', { method: 'POST', body: JSON.stringify({ uris: chunk }) });
+                }).then(function() {
+                    processed += chunk.length;
+                    pb.style.width = Math.round(processed / total * 100) + '%';
+                    pc.textContent = processed + ' / ' + total;
+                    addLog('Bloque ' + (idx + 1) + '/' + chunks.length + ' (' + chunk.length + ')', 'success');
+                });
+            });
             return chain.then(function() { return url; });
         }).then(function(url) {
-            pb.style.width='100%'; pt.textContent='¡Completado!';
-            addLog('¡Playlist con '+mixed.length+' canciones!','success');
+            pb.style.width = '100%'; pt.textContent = '¡Completado!';
+            addLog('¡Playlist con ' + mixed.length + ' canciones!', 'success');
             rs.classList.add('active');
-            document.getElementById('resultText').innerHTML='Añadidas <strong>'+mixed.length+'</strong> canciones a "<strong>'+name+'</strong>" ('+bp+':'+sp+').<br><br><a href="'+url+'" target="_blank">Abrir en Spotify</a>';
-            showToast('¡Playlist creada!','success');
+            var rt = document.getElementById('resultText');
+            rt.textContent = '';
+            rt.appendChild(document.createTextNode('Añadidas ' + mixed.length + ' canciones a "' + name + '" (' + bp + ':' + sp + '). '));
+            rt.appendChild(document.createElement('br'));
+            var a = document.createElement('a');
+            a.href = url; a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'Abrir en Spotify';
+            rt.appendChild(a);
+            showToast('¡Playlist creada!', 'success');
         }).catch(function(e) {
-            addLog('Error: '+e.message,'error'); pt.textContent='Error';
-            showToast('Error: '+e.message,'error');
-        }).finally(function() { btn.disabled=false; btn.textContent='Crear Playlist Mixta'; checkReady(); });
+            addLog('Error: ' + e.message, 'error'); pt.textContent = 'Error';
+            showToast('Error: ' + e.message, 'error');
+        }).finally(function() { btn.textContent = 'Crear Playlist Mixta'; btn.disabled = false; checkReady(); });
     }
 
-    function showLoading(t) { document.getElementById('loadingText').textContent=t||'Cargando...'; document.getElementById('loadingOverlay').classList.add('active'); }
+    function showLoading(t) { document.getElementById('loadingText').textContent = t || 'Cargando...'; document.getElementById('loadingOverlay').classList.add('active'); }
     function hideLoading() { document.getElementById('loadingOverlay').classList.remove('active'); }
     function showToast(msg, type) {
-        type = type||'info';
+        type = type || 'info';
         var c = document.getElementById('toastContainer');
         var t = document.createElement('div');
-        t.className = 'toast '+type;
-        t.innerHTML = '<span>['+(type==='success'?'OK':'X')+']</span><span>'+msg+'</span>';
+        t.className = 'toast ' + type;
+        var s1 = document.createElement('span'); s1.textContent = type === 'success' ? '✓' : '✕';
+        var s2 = document.createElement('span'); s2.textContent = msg;
+        t.appendChild(s1); t.appendChild(s2);
         c.appendChild(t);
-        setTimeout(function() { t.style.opacity='0'; setTimeout(function(){t.remove();},300); }, 4000);
+        setTimeout(function() { t.style.opacity = '0'; setTimeout(function() { t.remove(); }, 300); }, 5000);
     }
     function addLog(msg, type) {
-        type = type||'info';
         var l = document.getElementById('progressLog');
         var e = document.createElement('div');
-        e.className = 'log-entry '+type;
+        e.className = 'log-entry ' + (type || 'info');
         e.textContent = msg;
         l.appendChild(e);
         l.scrollTop = l.scrollHeight;
+    }
+
+    function showApp() {
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('appMain').classList.remove('hidden');
+        resetPreview('bachata'); resetPreview('salsa');
     }
 
     function init() {
         var params = new URLSearchParams(window.location.search);
         var code = params.get('code');
         var error = params.get('error');
-        if (error) { showToast('Error: '+error,'error'); return; }
+        if (error) { showToast('Error: ' + error, 'error'); return; }
         if (code) {
             showLoading('Autenticando...');
-            exchangeCodeForToken(code).then(function() { return getUserProfile(); }).then(function() {
-                document.getElementById('loginScreen').classList.add('hidden');
-                document.getElementById('appMain').classList.remove('hidden');
+            exchangeCodeForToken(code).then(getUserProfile).then(function() {
+                showApp();
                 return loadPlaylists();
-            }).catch(function(e) { showToast('Error: '+e.message,'error'); console.error(e); }).finally(hideLoading);
+            }).catch(function(e) { showToast('Error: ' + e.message, 'error'); console.error(e); }).finally(hideLoading);
             return;
         }
-        var saved = sessionStorage.getItem('access_token');
-        if (saved) {
+        if (sessionStorage.getItem('access_token')) {
+            showLoading('Cargando...');
             getValidToken().then(function(t) {
-                if (t) {
-                    accessToken = t;
-                    return getUserProfile();
-                }
+                if (t) return getUserProfile();
             }).then(function() {
-                if (userId) {
-                    document.getElementById('loginScreen').classList.add('hidden');
-                    document.getElementById('appMain').classList.remove('hidden');
-                    return loadPlaylists();
-                }
+                if (userId) { showApp(); return loadPlaylists(); }
             }).catch(function(e) { console.error(e); }).finally(hideLoading);
-            return;
         }
-        hideLoading();
     }
 
     init();
